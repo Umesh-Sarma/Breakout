@@ -131,10 +131,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate{
         //now figure the number and spacing of each row of bricks
         let count = Int(frame.width) / 55 //bricks per row
         let xOffset = (Int(frame.width) - (count * 55)) / 2 + Int(frame.minX) + 25
-        let y = Int(frame.maxY) - 65
-        for i in 0..<count {
-            let x = i * 55 + xOffset
-            makeBrick(x: x, y: y, color: .green)
+        let colors : [UIColor] = [.blue, .orange, .green]
+        for r in 0..<3 {
+            let y = Int(frame.maxY) - 65 - (r * 25)
+            for i in 0..<count {
+                let x = i * 55 + xOffset
+                makeBrick(x: x, y: y, color: colors[r])
+            }
         }
     }
     
@@ -204,13 +207,26 @@ class GameScene: SKScene, SKPhysicsContactDelegate{
             if contact.bodyA.node == brick || contact.bodyB.node == brick {
                 score += 1
                 updateLabels()
-                brick.removeFromParent()
-                removedBricks += 1
-                if removedBricks == bricks.count {
-                    gameOver(winner: true)
+                if brick.color == .blue {
+                    brick.color = .orange
+                }
+                else {
+                    if brick.color == .orange {
+                        brick.color = .green
+                    }
+                    else {
+                        brick.removeFromParent()
+                        removedBricks += 1
+                        if removedBricks == bricks.count {
+                            gameOver(winner: true)
+                        }
+                    }
                 }
             }
         }
+    
+               
+            
         if contact.bodyA.node?.name == "loseZone" || contact.bodyB.node?.name == "loseZone" {
             lives -= 1
             if lives > 0 {
